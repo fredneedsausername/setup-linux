@@ -1,0 +1,3 @@
+- How to save tmux sessions when you turn off the pc. There is a way to do that, don't worry
+
+- Is there a text editor like the new notepad on windows, in the sense that you can open multiple tabs, write whatever in them and not save it to a file, and when you turn off the pc and come back to it the files will be still there when you re-open notepad, and you can at any time save one of the files to disk, and reopen that file in the future with notepad, and still you can decide to not save the file and it will still be there when you reopen the app. Yes, there is, it is called neovim. Yes, neovim can actually be used like that.

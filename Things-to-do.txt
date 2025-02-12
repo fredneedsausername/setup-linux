@@ -1,0 +1,69 @@
+- Partiziona root e /home, per tenere il sistema separato dai tuoi dati. Logical Volume Resizer per partizionare facilmente root e home, crea
+anche una partizione /boot, ma questa deve essere una partizione vera, da 1 GB
+Per contollare le partizioni di lvr, usa i comandi:
+    sudo vgdisplay
+    sudo lvdisplay
+    lsblk
+Per assicurarti che /boot sia montato correttamente:
+    df -h
+
+- fai sudo apt update per aggiornare la package list
+- ricordati che puoi utilizzare vs code con la tastiera soltanto
+- zram per avere lo swap per la memoria invece che usare le partizioni
+- fai il setup del firewall
+- installa strumenti per terminale utili come: btop neofetch glances bat tmux fzf ripgrep gdu exa
+- se usi neovim, installa i plugin treesitter, telescope, LSP, and lazy.nvim
+- per il workload della gpu: nvidia-smi
+- attiva gli upgrade di sicurezza automaticamente
+- rimuovi la capacità di altri computer di connettersi via ssh, e se proprio devi attiva il 2fa
+- sudo apt autoremove --purge rimuove tutte le librerie e i file di configurazione del software rimosso dal sistema.
+- neovim come text editor simile a notepad su windows
+- installa driver gpu
+- per imparare neovim: :help vimtutor
+- impara come splittare orizzontalmente o verticalmente una finestra in neovim, e aggiustare la larghezza e altezza dello split, e come chiudere
+lo split
+- imposta gpu in base a se sei collegato alla rete o se sei a batteria:
+scarica driver nvidia
+se non lo hai già scaricato per scaricare i driver, scarica nvidia-prime
+- usa il software redshift a 4200K per avere il 60% di filtro luce blu, in alternativa prova lo spyder per calibrare il colore
+crea un file bash con:
+    #!/bin/bash
+
+    # Check if AC power is connected
+    if grep -q "1" /sys/class/power_supply/AC/online; then
+        TARGET_GPU="nvidia"
+    else
+        TARGET_GPU="intel"
+    fi
+
+    # Get the current GPU mode
+    CURRENT_GPU=$(prime-select query)
+
+    # Switch only if necessary
+    if [[ "$CURRENT_GPU" != "$TARGET_GPU" ]]; then
+        # Switching GPU to $TARGET_GPU...
+        sudo prime-select $TARGET_GPU
+    else
+        # GPU is already set to $CURRENT_GPU. No changes needed.
+    fi
+vai su:
+    sudo nano /etc/systemd/system/gpu-switch.service
+copia sostituendo dove appropriato:
+    [Unit]
+    Description=Auto GPU Switching Based on AC Power
+    After=multi-user.target
+
+    [Service]
+    Type=oneshot
+    ExecStart=/path/to/your/script.sh
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=multi-user.target
+dai il permesso di eseguire al tuo script, sostituendo il path con quello giusto
+    sudo chmod +x /path/to/your/script.sh
+ricarica systemd e avvia il servizio:
+    sudo systemctl daemon-reload
+    sudo systemctl enable gpu-switch.service
+fai il reboot e controlla che lo script stia girando bene:
+    prime-select query
